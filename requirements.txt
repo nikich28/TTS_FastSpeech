@@ -1,8 +1,6 @@
 typing
 numpy
-math
 tqdm
-random
 librosa
 dataclasses
 wandb

@@ -5,7 +5,7 @@ import torch
 @dataclass
 class TaskConfig:
     device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    batch_size: int = 32
+    batch_size: int = 16
     dict_size: int = 51
     emb_dim: int = 384
     n_blocks1: int = 6
@@ -15,7 +15,7 @@ class TaskConfig:
     kernel_size: int = 3
     duration_size: int = 3
     attn_size: int = 2
-    output_size: int = 384
+    output_size: int = 80
     dropout: float = 0.1
     alpha: float = 1.0
     n_epochs: int = 100

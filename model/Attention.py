@@ -26,7 +26,7 @@ class MultiHeadAttention(nn.Module):
         if mask is not None:
             attn_scores = attn_scores.masked_fill(mask.unsqueeze(1) == 0, -1e9)
         attn_probs = self.softmax(attn_scores)
-        attn_probs = self.dropout(attn_probs)
+        # attn_probs = self.dropout(attn_probs)
         z = torch.matmul(attn_probs, value)
-        z = z.transpose(1, 2).contiguous().view(n_batches, -1, self.n_heads * self.d_v)
+        z = z.transpose(1, 2).contiguous().view(n_batches, -1, self.n_heads * self.hidden)
         return self.linear(z)

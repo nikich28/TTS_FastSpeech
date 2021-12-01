@@ -6,13 +6,13 @@ class DurationPredictor(nn.Module):
         super().__init__()
         self.conv1 = nn.Conv1d(input_size, input_size, kernel_size, padding='same')
         self.additional1 = nn.Sequential(
-            nn.ReLU(inplace=True),
+            nn.ReLU(),
             nn.LayerNorm(input_size),
             nn.Dropout(dropout),
         )
         self.conv2 = nn.Conv1d(input_size, input_size, kernel_size, padding='same')
         self.additional2 = nn.Sequential(
-            nn.ReLU(inplace=True),
+            nn.ReLU(),
             nn.LayerNorm(input_size),
             nn.Dropout(dropout),
             nn.Linear(input_size, 1),

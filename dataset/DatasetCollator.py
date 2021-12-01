@@ -1,6 +1,6 @@
 import torch
 from torch.nn.utils.rnn import pad_sequence
-from LJSpeechDataset import Batch
+from .LJSpeechDataset import Batch
 from typing import List, Tuple, Dict
 
 

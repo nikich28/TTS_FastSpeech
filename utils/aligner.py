@@ -6,7 +6,7 @@ from torch.nn.utils.rnn import pad_sequence
 from typing import List, Union
 from dataclasses import dataclass
 
-from featurizer import MelSpectrogramConfig
+from .featurizer import MelSpectrogramConfig
 
 @dataclass
 class Point:

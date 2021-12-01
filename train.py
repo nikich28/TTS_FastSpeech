@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
     # create utils
     melspec_config = MelSpectrogramConfig()
-    featurizer = MelSpectrogram(melspec_config)
+    featurizer = MelSpectrogram(melspec_config).to(config.device)
     aligner = GraphemeAligner().to(config.device)
 
     # data
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     # model
     model = FastSpeechModel(config.dict_size, config.emb_dim, config.n_blocks1, config.n_blocks2, config.n_heads,
                             config.conv_size, config.kernel_size, config.duration_size, config.attn_size,
-                            config.output_size, config.dropout, config.alpha
+                            config.output_size, config.device, config.dropout, config.alpha
                             ).to(config.device)
     vocoder = Vocoder().to(config.device)
 

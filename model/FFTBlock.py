@@ -1,5 +1,5 @@
 import torch.nn as nn
-from Attention import MultiHeadAttention
+from .Attention import MultiHeadAttention
 
 
 class FFTBlock(nn.Module):
@@ -18,7 +18,7 @@ class FFTBlock(nn.Module):
         )
         self.norm1 = nn.LayerNorm(input_size)
         self.norm2 = nn.LayerNorm(input_size)
-        self.act = nn.ReLU(inplace=True)
+        self.act = nn.ReLU()
         self.dropout1 = nn.Dropout(dropout)
         self.dropout2 = nn.Dropout(dropout)
         self.conv1 = nn.Conv1d(
@@ -35,12 +35,12 @@ class FFTBlock(nn.Module):
         )
 
     def forward(self, x, mask=None):
-        tmp = x
+        tmp = x.clone()
         tmp = self.norm1(tmp)
         tmp = self.attn(tmp, tmp, tmp, mask)
         x += self.dropout1(tmp)
 
-        tmp = x
+        tmp = x.clone()
         tmp = self.norm2(tmp)
         tmp = self.dropout2(self.conv2(self.act(self.conv1(tmp.transpose(1, 2))))).transpose(1, 2)
         return x + tmp
