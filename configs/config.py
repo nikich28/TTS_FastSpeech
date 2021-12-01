@@ -5,7 +5,7 @@ import torch
 @dataclass
 class TaskConfig:
     device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    batch_size: int = 16
+    batch_size: int = 32
     dict_size: int = 51
     emb_dim: int = 384
     n_blocks1: int = 6
@@ -21,5 +21,5 @@ class TaskConfig:
     n_epochs: int = 100
     lr: float = 5e-4
     project_name: str = 'overfit'
-    show_every: int = 10
+    show_every: int = 20
     warmup: int = 4000
