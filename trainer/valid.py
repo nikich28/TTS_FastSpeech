@@ -25,11 +25,11 @@ def valid(model, vocoder, dataloader, criterion, featurizer, aligner, logger, ep
         logger.add_scalar('combined loss', loss.item())
 
         if (epoch + 1) % config.show_every == 0:
-            smp = spect[:, 0].detach()
+            smp = output[0][0].unsqueeze(0)
             sr = melspec_config.sr
-            preds = vocoder.inference(smp).squeeze(0)
+            preds = vocoder.inference(smp)
             logger.add_audio('Generated_audio', preds, sample_rate=sr)
-            logger.add_audio('Real_audio', batch.waveform[:, 0].squeeze(1), sample_rate=sr)
+            logger.add_audio('Real_audio', batch.waveform[0], sample_rate=sr)
             logger.add_text('Text', batch.transcript[0])
 
         break
