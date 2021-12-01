@@ -12,25 +12,20 @@ class FastSpeechModel(nn.Module):
         self.pe1 = PositionalEncoding(emb_dim)
         self.pe2 = PositionalEncoding(emb_dim)
         self.linear = nn.Linear(emb_dim, output_size)
-        self.blocks1 = nn.ModuleList([
+        self.blocks1 = nn.Sequential(*[
             FFTBlock(n_heads, attn_hidden, emb_dim, conv_size, kernel_size, dropout) for _ in range(n_blocks1)
         ])
-        self.blocks2 = nn.ModuleList([
+        self.blocks2 = nn.Sequential(*[
             FFTBlock(n_heads, attn_hidden, emb_dim, conv_size, kernel_size, dropout) for _ in range(n_blocks2)
         ])
         self.LR = LengthRegulator(emb_dim, duration_size, device, dropout, alpha)
 
     def forward(self, x):
-        tkn = x.tokens
-        emb = self.pe1(self.emb(tkn))
-        for b in self.blocks1:
-            emb = b(emb)
-        tkn = emb
+        emb = self.pe1(self.emb(x.tokens))
+        out = self.blocks1(emb)
 
-        tkn, predicted_duration = self.LR(tkn, target_duration=x.durations)
+        tkn, predicted_duration = self.LR(out, target_duration=x.durations)
         emb = self.pe2(tkn)
-        for b in self.blocks2:
-            emb = b(emb)
-        tkn = emb
+        out = self.blocks2(emb)
 
         return (self.linear(tkn).transpose(1, 2), predicted_duration)

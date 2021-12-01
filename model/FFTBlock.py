@@ -35,12 +35,12 @@ class FFTBlock(nn.Module):
         )
 
     def forward(self, x, mask=None):
-        tmp = x.clone()
-        tmp = self.norm1(tmp)
-        tmp = self.attn(tmp, tmp, tmp, mask)
-        x += self.dropout1(tmp)
+        identity = x
+        x = self.norm1(x)
+        x = self.attn(x, x, x, mask)
+        x = self.dropout1(x) + identity
 
-        tmp = x.clone()
-        tmp = self.norm2(tmp)
-        tmp = self.dropout2(self.conv2(self.act(self.conv1(tmp.transpose(1, 2))))).transpose(1, 2)
-        return x + tmp
+        identity = x
+        x = self.norm2(x)
+        x = self.dropout2(self.conv2(self.act(self.conv1(x.transpose(1, 2)))).transpose(1, 2))
+        return x + identity

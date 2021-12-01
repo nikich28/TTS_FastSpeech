@@ -12,5 +12,5 @@ class CustomLoss(nn.Module):
         min_len_spec = min(spect.size(-1), spect_preds.size(-1))
 
         return (self.spect_mse(spect[:, :, :min_len_spec], spect_preds[:, :, :min_len_spec]),
-                self.duration_mse(duration[:, :, :min_len_dur], duration_preds[:, :, :min_len_dur])
+                self.duration_mse(duration[:, :min_len_dur], duration_preds[:, :min_len_dur])
                 )

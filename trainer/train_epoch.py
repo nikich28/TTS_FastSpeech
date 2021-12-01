@@ -9,9 +9,9 @@ def train_epoch(model, vocoder, optimizer, scheduler, dataloader, criterion, fea
     for i, batch in tqdm(enumerate(dataloader)):
         batch = batch.to(config.device)
 
-        spect = featurizer(batch.waveform)
         with torch.no_grad():
             durations = aligner(batch.waveform, batch.waveform_length, batch.transcript)
+        spect = featurizer(batch.waveform)
 
         durations = durations * (batch.waveform_length // melspec_config.hop_length + 1).unsqueeze(-1)
         batch.durations = durations.to(config.device)
