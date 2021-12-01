@@ -26,6 +26,26 @@ torch.backends.cudnn.deterministic = True
 root = '/content/'
 
 
+# https://nlp.seas.harvard.edu/2018/04/03/attention.html#optimizer
+
+class CustomScheduler:
+    def __init__(self, model_size, optimizer, warmup, factor=1):
+        self.optimizer = optimizer
+        self.warmup = warmup
+        self.factor = factor
+        self.model_size = model_size
+        self._step = 0
+
+    def rate(self, step):
+        return self.model_size ** (-0.5) * min(step ** (-0.5), step * self.warmup ** (-1.5))
+
+    def step(self):
+        self._step += 1
+        rate = self.rate(self._step)
+        for p in self.optimizer.param_groups:
+            p['lr'] = rate
+
+
 def train(model, vocoder, dataloader, optimizer, scheduler, criterion, featurizer, aligner, logger,
           melspec_config, config):
     vocoder.eval()
@@ -33,7 +53,7 @@ def train(model, vocoder, dataloader, optimizer, scheduler, criterion, featurize
         print(f'Start of the epoch {epoch}')
         train_epoch(model, vocoder, optimizer, scheduler, dataloader, criterion, featurizer, aligner, logger, epoch,
                     melspec_config, config)
-        valid(model, dataloader, criterion, featurizer, aligner, logger, epoch, melspec_config, config)
+        valid(model, vocoder, dataloader, criterion, featurizer, aligner, logger, epoch, melspec_config, config)
 
 
 if __name__ == '__main__':
@@ -59,7 +79,7 @@ if __name__ == '__main__':
     # optmizations
     criterion = CustomLoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=config.lr, betas=(0.9, 0.98), eps=1e-9)
-    scheduler = ExponentialLR(optimizer, gamma=0.9)
+    scheduler = CustomScheduler(config.emb_dim, optimizer, config.warmup)
 
     # wandb
     logger = WanDBWriter(config)

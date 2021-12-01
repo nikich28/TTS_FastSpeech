@@ -28,6 +28,22 @@ def train_epoch(model, vocoder, optimizer, scheduler, dataloader, criterion, fea
         logger.add_scalar('duration_loss', losses[1].item())
         logger.add_scalar('combined loss', loss.item())
 
+        if (epoch + 1) % config.show_every == 0:
+            with torch.no_grad():
+                smp = spect[:, 0].detach()
+                sr = melspec_config.sr
+                preds = vocoder.inference(smp).squeeze(0)
+                logger.add_audio('Generated_audio', preds, sample_rate=sr)
+                logger.add_audio('Real_audio', batch.waveform[:, 0].squeeze(1), sample_rate=sr)
+                logger.add_text('Text', batch.transcript[0])
+
+                model.eval()
+                preds_without, l = model(batch, True)
+                smp = preds_without[:, 0].detach()
+                preds = vocoder.inference(smp).squeeze(0)
+                logger.add_audio('Generated_audio_w/d', preds, sample_rate=sr)
+                model.train()
+
         # we use only one batch
         break
     scheduler.step()

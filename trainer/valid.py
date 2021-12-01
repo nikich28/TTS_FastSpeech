@@ -3,7 +3,7 @@ from tqdm import tqdm
 
 
 @torch.no_grad()
-def valid(model, dataloader, criterion, featurizer, aligner, logger, epoch, melspec_config, config):
+def valid(model, vocoder, dataloader, criterion, featurizer, aligner, logger, epoch, melspec_config, config):
     model.eval()
     for i, batch in tqdm(enumerate(dataloader)):
         batch = batch.to(config.device)
@@ -23,6 +23,14 @@ def valid(model, dataloader, criterion, featurizer, aligner, logger, epoch, mels
         logger.add_scalar('spect_loss', losses[0].item())
         logger.add_scalar('duration_loss', losses[1].item())
         logger.add_scalar('combined loss', loss.item())
+
+        if (epoch + 1) % config.show_every == 0:
+            smp = spect[:, 0].detach()
+            sr = melspec_config.sr
+            preds = vocoder.inference(smp).squeeze(0)
+            logger.add_audio('Generated_audio', preds, sample_rate=sr)
+            logger.add_audio('Real_audio', batch.waveform[:, 0].squeeze(1), sample_rate=sr)
+            logger.add_text('Text', batch.transcript[0])
 
         break
 
