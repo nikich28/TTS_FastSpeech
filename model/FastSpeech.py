@@ -21,7 +21,10 @@ class FastSpeechModel(nn.Module):
         self.LR = LengthRegulator(emb_dim, duration_size, device, dropout, alpha)
 
     def forward(self, x, flag=False):
-        emb = self.pe1(self.emb(x.tokens))
+        if not flag:
+            emb = self.pe1(self.emb(x.tokens))
+        else:
+            emb = self.pe1(self.emb(x))
         out = self.blocks1(emb)
 
         if not flag:
