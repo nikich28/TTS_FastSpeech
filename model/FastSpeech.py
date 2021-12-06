@@ -31,4 +31,4 @@ class FastSpeechModel(nn.Module):
         emb = self.pe2(tkn)
         out = self.blocks2(emb)
 
-        return (self.linear(tkn).transpose(1, 2), predicted_duration)
+        return (self.linear(out).transpose(1, 2), predicted_duration)

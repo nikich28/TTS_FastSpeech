@@ -1,6 +1,8 @@
 ### TextToSpeech with FastSpeech
 
-Commands for training in google colab:
+implemented FastSpeech, all logs and report are available in wandb
+
+Commands for training and testing:
 ~~~
 !wget https://data.keithito.com/data/speech/LJSpeech-1.1.tar.bz2
 !tar -xjf LJSpeech-1.1.tar.bz2
@@ -22,4 +24,8 @@ gdd.download_file_from_google_drive(
     dest_path='./waveglow_256channels_universal_v5.pt'
 )
 
+#for training
 !python3 train.py
+
+#for testing
+!python3 test.py

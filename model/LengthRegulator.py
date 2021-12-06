@@ -11,16 +11,16 @@ class LengthRegulator(nn.Module):
         self.device = device
 
     def forward(self, x, target_duration=None):
-        predicted_duration = torch.exp(self.dp(x))
+        predicted_duration = self.dp(x)
 
         # check if we have target (is it training or not)
         if target_duration is None:
-            duration = predicted_duration.cpu()
+            duration = predicted_duration.exp().cpu()
         else:
             duration = target_duration.cpu()
         duration = torch.round(duration * self.alpha).int()
 
-        lens = duration.sum(axis=-1)
+        lens = duration.sum(dim=-1)
         max_len = int(lens.max())
         mask = torch.zeros((x.size(0), x.size(1), max_len))
 
